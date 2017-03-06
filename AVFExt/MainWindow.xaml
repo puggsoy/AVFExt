@@ -1,0 +1,31 @@
+﻿<Window x:Class="AVFExt.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:al ="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AVFExt"
+        mc:Ignorable="d"
+        Title="AVFExt" Height="400" Width="570" MinWidth="300" MinHeight="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="170"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0">
+            <Button x:Name="openBtn" Content="Open" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" Width="75" Click="openBtn_Click"/>
+            <Button x:Name="extractBtn" Content="Extract All" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" Width="75" Click="extractBtn_Click" IsEnabled="False"/>
+        </StackPanel>
+        <ListBox x:Name="listBox" Grid.Column="1" Grid.Row="0" SelectionChanged="onListBoxSelectionChange"/>
+        <ScrollViewer x:Name="scrollView" Grid.ColumnSpan="2" Grid.Row="1">
+            <Image x:Name="image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </ScrollViewer>
+        <GridSplitter x:Name="gridSplitter" Grid.Row="0" Grid.ColumnSpan="2"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeDirection="Rows"
+                      Height="4" Background="DarkGray"/>
+    </Grid>
+</Window>
