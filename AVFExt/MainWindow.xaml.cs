@@ -106,20 +106,44 @@ namespace AVFExt
             }
         }
 
+        private void dumpBtn_Click(object sender, RoutedEventArgs e)
+        {
+            VistaFolderBrowserDialog d = new VistaFolderBrowserDialog();
+
+            if (d.ShowDialog() == true)
+            {
+                dumpFiles(d.SelectedPath);
+            }
+        }
+
+        private void dumpFiles(string outDir)
+        {
+            try
+            {
+                avfFile.dumpFrame(outDir, listBox.SelectedIndex);
+
+                MessageBox.Show("Dumped selected image to " + outDir + "!", "Dump successful", MessageBoxButton.OK);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Dump failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void onListBoxSelectionChange(object sender, SelectionChangedEventArgs e)
         {
             if (listBox.Items.Count == 0)
             {
                 extractBtn.IsEnabled = false;
+                dumpBtn.IsEnabled = false;
                 return;
             }
 
             extractBtn.IsEnabled = true;
+            dumpBtn.IsEnabled = true;
 
             using (MemoryStream mem = new MemoryStream())
             {
-                //avfFile.frames[listBox.SelectedIndex].Save(mem, ImageFormat.Png);
-                //((FrameItem)listBox.SelectedItem).bmp.Save(mem, ImageFormat.Png);
                 ((Bitmap)listBox.SelectedValue).Save(mem, ImageFormat.Png);
                 mem.Position = 0;
                 BitmapImage bmpImg = new BitmapImage();

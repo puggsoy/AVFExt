@@ -17,8 +17,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0">
-            <Button x:Name="openBtn" Content="Open" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" Width="75" Click="openBtn_Click"/>
-            <Button x:Name="extractBtn" Content="Extract All" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" Width="75" Click="extractBtn_Click" IsEnabled="False"/>
+            <Button x:Name="openBtn" Content="Open" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" MinWidth="75" Click="openBtn_Click"/>
+            <Button x:Name="extractBtn" Content="Extract All" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" MinWidth="75" Click="extractBtn_Click" IsEnabled="False"/>
+            <Button x:Name="dumpBtn" Content="Dump Selected" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,0" MinWidth="75"  Click="dumpBtn_Click" IsEnabled="False" Visibility="Hidden"/>
         </StackPanel>
         <ListBox x:Name="listBox" Grid.Column="1" Grid.Row="0" SelectionChanged="onListBoxSelectionChange"/>
         <ScrollViewer x:Name="scrollView" Grid.ColumnSpan="2" Grid.Row="1">

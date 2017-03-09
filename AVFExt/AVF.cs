@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 
 namespace AVFExt
 {
@@ -46,6 +47,7 @@ namespace AVFExt
             AVF avf = new AVF();
             avf.basename = Path.GetFileNameWithoutExtension(fName);
             avf.frames = new Bitmap[numEntries];
+            avf.rawFrames = new byte[numEntries][];
 
             for (int i = 0; i < numEntries; i++)
             {
@@ -62,14 +64,11 @@ namespace AVFExt
                     throw new Exception("Decompression issue: " + ex.ToString());
                 }
 
-                outData = RGB555_888(outData);
+                avf.rawFrames[entries[i].frameNo] = new byte[outData.Length];
+                outData.CopyTo(avf.rawFrames[entries[i].frameNo], 0);
 
                 Bitmap bmp = toBitmap(outData, width, height);
                 avf.frames[entries[i].frameNo] = bmp;
-
-                /*System.Diagnostics.Debug.Print(outDir);
-                Directory.CreateDirectory(outDir);
-                bmp.Save(Path.Combine(outDir, baseName + "_" + entries[i].frameNo + ".png"), ImageFormat.Png);*/
             }
 
             return avf;
@@ -77,11 +76,12 @@ namespace AVFExt
 
         static private Bitmap toBitmap(byte[] data, uint width, uint height)
         {
-            Bitmap bmp = new Bitmap((int)width, (int)height, PixelFormat.Format24bppRgb);
+            Bitmap bmp = new Bitmap((int)width, (int)height, PixelFormat.Format16bppRgb555);
 
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
                                               ImageLockMode.WriteOnly, bmp.PixelFormat);
             System.Runtime.InteropServices.Marshal.Copy(data, 0, bmpData.Scan0, data.Length);
+
             bmp.UnlockBits(bmpData);
 
             return bmp;
@@ -98,35 +98,10 @@ namespace AVFExt
 
             return dec;
         }
-
-        static private byte[] RGB555_888(byte[] col555)
-        {
-            List<byte> col888 = new List<byte>();
-
-            byte r;
-            byte g;
-            byte b;
-
-            for(int i = 0; i < col555.Length; i += 2)
-            {
-                r = (byte)((col555[i + 1] & 0x7C) << 1);
-                g = (byte)(((col555[i + 1] & 0x03) << 6) | ((col555[i] & 0xE0) >> 2));
-                b = (byte)((col555[i] & 0x1F) << 3);
-
-                r |= (byte)(r >> 5);
-                g |= (byte)(g >> 5);
-                b |= (byte)(b >> 5);
-
-                col888.Add(r);
-                col888.Add(g);
-                col888.Add(b);
-            }
-
-            return col888.ToArray();
-        }
         //End of static functions
 
         public string basename;
+        public byte[][] rawFrames;
         public Bitmap[] frames;
         
         public AVF() {}
@@ -138,6 +113,12 @@ namespace AVFExt
                 string name = basename + "_" + i + ".png";
                 frames[i].Save(Path.Combine(dir, name), ImageFormat.Png);
             }
+        }
+
+        public void dumpFrame(string dir, int index)
+        {
+            string name = basename + "_" + index + ".dmp";
+            File.WriteAllBytes(Path.Combine(dir, name), rawFrames[index]);
         }
 
         private struct AVFEntry
