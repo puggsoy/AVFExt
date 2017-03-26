@@ -7,6 +7,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace AVFExt
 {
@@ -79,8 +80,22 @@ namespace AVFExt
             Bitmap bmp = new Bitmap((int)width, (int)height, PixelFormat.Format16bppRgb555);
 
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                                              ImageLockMode.WriteOnly, bmp.PixelFormat);
-            System.Runtime.InteropServices.Marshal.Copy(data, 0, bmpData.Scan0, data.Length);
+                                              ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            /*int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+            data = new byte[bytes];
+
+            for (int counter = 0; counter < data.Length; counter++)
+            {
+                if (counter % 2 == 0)
+                    data[counter] = 0;
+                else
+                    data[counter] = 0x1F;
+            }*/
+
+            IntPtr ptr = bmpData.Scan0;
+
+            Marshal.Copy(data, 0, ptr, data.Length);
 
             bmp.UnlockBits(bmpData);
 

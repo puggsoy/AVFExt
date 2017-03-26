@@ -26,7 +26,9 @@ namespace AVFExt
     /// </summary>
     public partial class MainWindow : Window
     {
-        AVF avfFile;
+        private AVF avfFile;
+
+        private const String InitialTitle = "AVFExt";
 
         public ObservableCollection<FrameItem> frameItems = new ObservableCollection<FrameItem>();
 
@@ -38,6 +40,10 @@ namespace AVFExt
             listBox.DisplayMemberPath = "name";
             listBox.SelectedValuePath = "bmp";
             listBox.SelectionMode = SelectionMode.Single;
+
+#if DEBUG
+            dumpBtn.Visibility = Visibility.Visible;
+#endif
         }
 
         private void openBtn_Click(object sender, RoutedEventArgs e)
@@ -54,10 +60,12 @@ namespace AVFExt
         
         private void openFile(string fName, string safeName)
         {
-            FileStream f = new FileStream(fName, FileMode.Open);
+            FileStream f = null;
 
             try
             {
+                f = new FileStream(fName, FileMode.Open, FileAccess.Read);
+
                 avfFile = AVF.load(f, safeName);
 
                 frameItems.Clear();
@@ -71,6 +79,8 @@ namespace AVFExt
                 }
 
                 listBox.SelectedIndex = 0;
+
+                Title = InitialTitle + " - " + safeName;
             }
             catch(Exception ex)
             {
@@ -78,7 +88,7 @@ namespace AVFExt
             }
             finally
             {
-                f.Close();
+                if (f != null) f.Close();
             }
         }
 
